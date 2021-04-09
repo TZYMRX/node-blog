@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="./public/css/login.css">
+  <link rel="stylesheet" href="../public/fontawesome-free-5.11.2-web/css/all.css">
+</head>
+
+<body>
+<div class="container" id="container">
+  <div class="form-container sign-up-container">
+    <form id="register_form" method="post" action="/register">
+      <h1>Create Account</h1>
+      <div class="social-container">
+        <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+        <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+      <span>or use your email for registration</span>
+      <input type="text" name="nickname" placeholder="Name"/>
+      <input type="email" name="email" placeholder="Email"/>
+      <input type="password" name="password" placeholder="Password"/>
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+  <div class="form-container sign-in-container">
+    <form id="login_form" method="post" action="/login">
+      <h1>Sign in</h1>
+      <div class="social-container">
+        <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+        <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+      <span>or use your account</span>
+      <input type="email" name="email" placeholder="Email">
+      <input type="password" name="password" placeholder="Password">
+      <a href="#">Forgot your password?</a>
+      <button type="submit">Sign In</button>
+    </form>
+  </div>
+  <div class="overlay-container">
+    <div class="overlay">
+      <div class="overlay-panel overlay-left">
+        <h1>Welcome Back!</h1>
+        <p>To keep connected with us please login with your personal info</p>
+        <button class="ghost" id="signIn">Sign In</button>
+      </div>
+      <div class="overlay-panel overlay-right">
+        <h1>Hello, Friend!</h1>
+        <p>Enter your personal details and start journey with us</p>
+        <button class="ghost" type="submit" id="signUp">Sign Up</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="./node_modules/jquery/dist/jquery.js"></script>
+<script src="../public/fontawesome-free-5.11.2-web/js/all.js"></script>
+<script>
+  const signUpButton = document.getElementById('signUp');
+  const signInButton = document.getElementById('signIn');
+  const container = document.getElementById('container');
+
+  signUpButton.addEventListener('click', () => {
+    container.classList.add("right-panel-active");
+  });
+
+  signInButton.addEventListener('click', () => {
+    container.classList.remove("right-panel-active");
+  });
+
+
+  $('#login_form').on('submit', function (e) {
+    e.preventDefault()
+    let formData = $(this).serialize()
+    $.ajax({
+      url: '/login',
+      type: 'post',
+      data: formData,
+      dataType: 'json',
+      success: function (data) {
+        let err_code = data.err_code
+        if (err_code === 0) {
+          window.alert('登录成功！')
+          window.location.href = '/'
+        } else if (err_code === 1) {
+          window.alert('Email or Password is invalid')
+        } else if (err_code === 500) {
+          window.alert('服务器忙，请稍后重试！')
+        }
+      }
+    })
+  })
+
+
+  $('#register_form').on('submit', function (e) {
+    e.preventDefault()
+    let formData = $(this).serialize()
+    console.log(formData)
+    $.ajax({
+      url: '/register',
+      type: 'post',
+      data: formData,
+      dataType: 'json',
+      success: function (data) {
+        let err_code = data.err_code
+        if (err_code === 0) {
+          window.alert('注册成功！')
+          // 服务端重定向针对异步请求无效
+          window.location.href = '/'
+        } else if (err_code === 1) {
+          window.alert('邮箱已存在！')
+        } else if (err_code === 2) {
+          window.alert('昵称已存在！')
+        } else if (err_code === 500) {
+          window.alert('服务器忙，请稍后重试！')
+        }
+      }
+    })
+  })
+</script>
+</body>
+
+</html>

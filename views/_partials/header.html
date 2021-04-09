@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="../../public/css/header.css">
+<div class="hold">
+  <div class="header">
+    <div class="container">
+      <div id="logo">
+        <a href="/">
+          <img src="../../public/img/logo3.png" width="100%" style="border-radius: 5%"/>
+        </a>
+      </div>
+      <ul class="nav">
+        {{if user}}
+
+        <li class="fabu"><a href="/topics/new">发布</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300"
+             data-close-others="false">
+            用户: {{ user.nickname }}
+            <b class="caret"></b>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="#">用户: {{ user.email }}</a></li>
+            <li><a href="/settings/profile">My Account</a></li>
+            <li><a href="/logout">Logout</a></li>
+          </ul>
+        </li>
+
+        {{else}}
+
+        <li><a href="/login">登录 / 注册</a></li>
+
+        {{/if}}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.onscroll = function () {
+    var el = document.getElementsByClassName('header')[0];
+    var className = 'small';
+    if (el.classList) {
+      if (window.scrollY > 10)
+        el.classList.add(className);
+      else
+        el.classList.remove(className);
+    }
+  };
+</script>

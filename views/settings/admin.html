@@ -1,0 +1,95 @@
+{{extend '../_layouts/home.html'}}
+
+{{block 'title'}}{{'Blog - Settings'}}{{/block}}
+
+{{block 'body'}}
+<section class="container" style="margin-top: 50px;">
+  {{include '../_partials/settings-nav.html'}}
+  <div class="col-md-5">
+    <div class="subhead">
+      <h2>修改密码</h2>
+    </div>
+    <hr>
+    <form id="admin_form" method="post">
+      <input type="text" id="password" value="{{user.password}}" hidden>
+      <div class="form-group">
+        <label>当前密码</label>
+        <input type="password" id="oldPassword" name="oldPwd" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>新的密码</label>
+        <input type="password" id="newPassword" name="newPwd" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>确认密码</label>
+        <input type="password" id="checkPassword" name="checkPwd" class="form-control">
+      </div>
+      <button type="submit" class="btn btn-success">保存</button>
+    </form>
+    <div class="subhead">
+      <h2>注销账号</h2>
+      <hr>
+    </div>
+    <div>
+      <p>一旦注销，不可找回，请谨慎操作</p>
+      <button class="btn btn-danger" id="delete_user" type="button">删除</button>
+    </div>
+    <hr>
+  </div>
+</section>
+{{/block}}
+
+{{block 'script'}}
+<script src="../../node_modules/blueimp-md5/js/md5.js"></script>
+<script>
+  $('#admin_form').on('submit', e => {
+    e.preventDefault()
+    const password = $("#password").val()
+    const oldPwd = md5(md5($('#oldPassword').val()))
+    const newPwd = $('#newPassword').val()
+    const checkPwd = $('#checkPassword').val()
+    if (oldPwd !== password) {
+      window.alert("当前密码不正确")
+    } else if (checkPwd !== newPwd) {
+      window.alert("两次密码输入不一致，请重新输入")
+    } else if (newPwd === '' || checkPwd === '') {
+      window.alert('请输入密码')
+    } else {
+      const formData = $('#admin_form').serialize()
+      $.ajax({
+        url: '/settings/admin',
+        type: 'post',
+        data: formData,
+        dataType: 'json',
+        success: data => {
+          let err_code = data.err_code
+          if (err_code === 0) {
+            window.alert('修改成功,请重新登陆')
+            window.location.href = '/login'
+          } else if (err_code === 500) {
+            window.alert('修改失败！')
+          }
+        }
+      })
+    }
+  })
+
+  $('#delete_user').on('click', e => {
+    if (window.confirm('确定要注销此账号吗？')) {
+      $.ajax({
+        url: '/settings/delete',
+        type: 'get',
+        success: data => {
+          const err_code = data.err_code
+          if (err_code === 0) {
+            window.alert('账户已注销')
+            window.location.href = '/login'
+          } else if (err_code === 500) {
+            window.alert('服务器忙，请稍后重试')
+          }
+        }
+      })
+    }
+  })
+</script>
+{{/block}}
